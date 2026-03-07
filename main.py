@@ -14,7 +14,7 @@ class pw:
         self.site = site
         self.updatedAt = datetime.datetime.now()
 
-path = "passVault/user.txt"
+path = "user.txt"
 
 if os.stat(path).st_size == 0:
     pw = input("Enter your password for your vault: ").encode("utf-8")
@@ -26,7 +26,7 @@ if os.stat(path).st_size == 0:
 
 else:
     passW = input("Enter your password: ").encode("utf-8")
-    with open("passVault/user.txt", "r") as f:
+    with open(path, "r") as f:
         stored_hash = f.read().encode()
 
     if bcrypt.checkpw(passW, stored_hash):
