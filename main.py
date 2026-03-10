@@ -2,40 +2,65 @@ import itertools
 import datetime
 import bcrypt
 import os
+import json
 
-log = open("log.txt", "a")
-user = open("user.txt", "a")
-now = str(datetime.datetime.now())
+open("user.txt", "a")
 
-class pw:
-    
-    id_iter = itertools.count()
-
-    def __init__(self, name, identifier, passW):
-        self.ID = next(pw.id_iter)
-        self.identifier = identifier
-        self.name = name
-        self.passW = passW
-        self.updatedAt = datetime.datetime.now()
-
-    def __str__(self):
-        return f"{self.ID} {self.name} {self.identifier} {self.passW}"
 
 def Log(a):
-    with open("log.txt", "r") as l:
-        if a == True: 
-            log.write("Login:        "+now+"\n")
-        elif a == False:
-            log.write("Failed login: "+now+"\n")
+    now = str(datetime.datetime.now())
 
+    f = {
+        "status" : "Failed",
+        "time" : now
+    }
+
+    t = {
+        "status" : "SucsessFull",
+        "time" : now
+    }
+
+    if os.path.exists("log.json") and os.path.getsize("log.json") > 0:
+        with open('log.json', 'r') as file:
+            data = json.load(file)
+    else:
+        data = {"logs": []}
+
+    if a == True:
+        data["logs"].append(t)
+    else:
+        data["logs"].append(f)
+
+    with open('log.json', 'w') as file:
+        json.dump(data, file, indent=4)
 
 def AddRecord():
+    now = str(datetime.datetime.now())
+
     name = input("Name of the site tha password belongs to: ")
     identifier = input("Gmail or username that belongs to the password: ")
     passW = input("Password that belongs to the account: ")
-    record = pw(name, identifier, passW)
 
-    print(record)
+    record = {
+        "Name" : name,
+        "Identifier" : identifier,
+        "Pw" : passW,
+        "UpdatedAt" : now
+    }
+
+    if os.path.exists("record.json") and os.path.getsize("record.json") > 0:
+        with open('record.json', 'r') as file:
+            data = json.load(file)
+    else:
+        data = {"records": []}
+
+    data["records"].append(record)
+
+    with open('record.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
+    
+    
 
 
 #def UpdateRecord():
