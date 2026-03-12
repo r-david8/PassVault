@@ -1,11 +1,10 @@
-import itertools
+from cryptography.fernet import Fernet
 import datetime
 import bcrypt
 import os
 import json
 
-open("user.txt", "a")
-
+open("user.key", "a")
 
 def Log(a):
     now = str(datetime.datetime.now())
@@ -81,7 +80,7 @@ def AddRecord():
 
 def LogIn():
     passW = input("Enter your password: ").encode("utf-8")
-    with open("user.txt", "r") as f:
+    with open("user.key", "r") as f:
         stored_hash = f.read().encode()
 
     if bcrypt.checkpw(passW, stored_hash):
@@ -110,12 +109,12 @@ def Register():
     s = bcrypt.gensalt()
     h = bcrypt.hashpw(pw, s)
 
-    with open("user.txt", "w") as f:
+    with open("user.key", "w") as f:
         f.write(h.decode())
 
 
 
-if os.stat("user.txt").st_size == 0:
+if os.stat("user.key").st_size == 0:
     Register()
     LogIn()
 else:
