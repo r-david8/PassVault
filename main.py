@@ -61,8 +61,35 @@ def AddRecord():
     save_records(data, master_pw)
 
     
+def show_record_by_name(password: bytes) -> None:
+    data = load_records(password)
+    records = data.get("records", [])
+    if not records:
+        print("No records found.")
+        return
+    name = input("Enter record name: ").strip().lower()
+    exact = [r for r in records if r.get("Name", "").strip().lower() == name]
+    if exact:
+        for r in exact:
+            print(json.dumps(r, indent=4))
+        return
+    partial = [r for r in records if name in r.get("Name", "").strip().lower()]
+    if partial:
+        for r in partial:
+            print(json.dumps(r, indent=4))
+        return
+    print("No record found with that name.")
     
 
+def showallrecords(password: bytes) -> None:
+    data = load_records(password)
+    records = data.get("records", [])
+    if not records:
+        print("No records found.")
+        return
+    for i, r in enumerate(records):
+        name = r.get("Name", "<no name>")
+        print(f"{i+1}. {name}")
 
 #def UpdateRecord():
 
@@ -70,9 +97,6 @@ def AddRecord():
 
 #def DeleteRecord():
 
-
-
-#def ShowRecord():
 
 
 def LogIn():
@@ -83,21 +107,30 @@ def LogIn():
     if bcrypt.checkpw(passW, stored_hash):
         print("Logged in!")
         Log(True)
-
-        print("Write 1 to add a new record")
-        print("Write 2 to update a record")
-        print("Write 3 to delete a record")
-        print("Write 4 to show a record")
-        print("Write 5 show all the record names")
-
-        command = input()
-        match command:
-            case "1":
-                AddRecord()
-            case "5":
-                showallrecords(passW)
-            case _:
-                print("Option not implemented yet.")
+        master_pw = passW
+        while True:
+            print("Write 1 to add a new record")
+            print("Write 2 to update a record")
+            print("Write 3 to delete a record")
+            print("Write 4 to show a record by name")
+            print("Write 5 to show all the record names")
+            print("Type 'exit' to logout")
+            command = input().strip()
+            if command.lower() == "exit":
+                break
+            match command:
+                case "1":
+                    AddRecord()
+                case "2":
+                    print("Update not implemented yet.")
+                case "3":
+                    print("Delete not implemented yet.")
+                case "4":
+                    show_record_by_name(master_pw)
+                case "5":
+                    showallrecords(master_pw)
+                case _:
+                    print("Option not implemented yet.")
 
     else:
         print("Incorrect password.")
@@ -148,19 +181,11 @@ def load_records(password: bytes) -> dict:
     return {"records": []}
 
 
-def showallrecords(password: bytes) -> None:
-    data = load_records(password)
-    records = data.get("records", [])
-    if not records:
-        print("No records found.")
-        return
-    for i, r in enumerate(records):
-        name = r.get("Name", "<no name>")
-        print(f"{i+1}. {name}")
+
+
 
 
 def save_records(records: dict, password: bytes) -> None:
-    # If file already exists and has a salt, reuse that salt so multiple writes use same salt.
     salt = None
     if os.path.exists("record.json") and os.path.getsize("record.json") > 0:
         with open("record.json", "r", encoding="utf-8") as f:
