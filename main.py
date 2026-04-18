@@ -8,6 +8,7 @@ import datetime
 import bcrypt
 import os
 import json
+import random
 
 open("user.key", "a")
 
@@ -40,6 +41,24 @@ def Log(a):
 
     with open('log.json', 'w') as file:
         json.dump(data, file, indent=4)
+
+def GeneratePass():
+    chars = []
+    while len(chars)<15:
+        letter1=chr(random.randint(65,90))
+        if len(letter1)==1 : chars.append(letter1)
+        letter2=chr(random.randint(97,122))
+        if len(letter2)==1 : chars.append(letter2)
+        num=chr(random.randint(48,57))
+        if len(num)==1 : chars.append(num)
+        num2=chr(random.randint(48,57))
+        if len(num2)==1 : chars.append(num2)
+        special=chr(random.randint(33,94))
+        if len(special)==1 : chars.append(special)
+
+    random.shuffle(chars)
+    passwrd = ""
+    print(passwrd.join(chars))
 
 def AddRecord():
     now = str(datetime.datetime.now())
@@ -109,6 +128,7 @@ def LogIn():
         Log(True)
         master_pw = passW
         while True:
+            print("Write 0 to generate a safe password")
             print("Write 1 to add a new record")
             print("Write 2 to update a record")
             print("Write 3 to delete a record")
@@ -119,6 +139,8 @@ def LogIn():
             if command.lower() == "exit":
                 break
             match command:
+                case "0":
+                    GeneratePass()
                 case "1":
                     AddRecord()
                 case "2":
